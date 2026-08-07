@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Реестр конвейерных лент — автономная версия</title>
+<style>
+:root{--bg:#f3f5f7;--panel:#fff;--ink:#20252b;--muted:#68717d;--line:#dfe3e8;--dark:#252a30;--red:#c9262d;--red2:#a91d24;--green:#1f8a55;--yellow:#b77900;--blue:#2867b2;--radius:10px;--shadow:0 10px 30px rgba(25,32,40,.08)}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;font:14px/1.45 Inter,Segoe UI,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+button,input,select,textarea{font:inherit}button{cursor:pointer}.app{display:grid;grid-template-columns:244px minmax(0,1fr);min-height:100vh}
+.sidebar{position:sticky;top:0;height:100vh;background:var(--dark);color:#fff;padding:22px 14px;display:flex;flex-direction:column}
+.brand{padding:0 12px 22px}.brand b{display:block;font-size:18px}.brand span{color:#aeb6bf;font-size:12px}
+.nav{display:grid;gap:5px}.nav button{border:0;background:transparent;color:#cfd5dc;text-align:left;padding:11px 12px;border-radius:8px}.nav button:hover,.nav button.active{background:#3a4047;color:#fff}.nav button.active{box-shadow:inset 3px 0 var(--red)}
+.privacy{margin-top:auto;padding:13px 12px;border-radius:8px;background:#30363d;color:#bfc6ce;font-size:12px}
+.main{min-width:0}.topbar{position:sticky;top:0;z-index:10;background:rgba(243,245,247,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:14px 24px;display:flex;gap:9px;align-items:center}.topbar .spacer{flex:1}
+.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:8px;padding:9px 13px;font-weight:600}.btn:hover{border-color:#aeb6bf}.btn.primary{background:var(--red);border-color:var(--red);color:#fff}.btn.primary:hover{background:var(--red2)}.btn.small{padding:6px 9px;font-size:12px}.btn.danger{color:var(--red)}
+.content{padding:24px;max-width:1600px;margin:auto}.page-head{display:flex;align-items:flex-start;gap:16px;margin-bottom:20px}.page-head h1{margin:0;font-size:25px}.page-head p{margin:5px 0 0;color:var(--muted)}.page-head .actions{margin-left:auto;display:flex;gap:8px}
+.grid{display:grid;gap:16px}.stats{grid-template-columns:repeat(4,minmax(150px,1fr))}.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px}.stat b{font-size:29px;display:block}.stat span{color:var(--muted)}.stat.warn b{color:var(--yellow)}.stat.bad b{color:var(--red)}.stat.good b{color:var(--green)}
+.two{grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr)}.section-title{font-size:16px;font-weight:700;margin:0 0 13px}.muted{color:var(--muted)}.empty{text-align:center;padding:46px 20px;color:var(--muted)}.empty b{display:block;color:var(--ink);font-size:16px;margin-bottom:6px}
+.table-wrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:var(--radius)}table{border-collapse:collapse;width:100%;min-width:880px}th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{position:sticky;top:0;background:#f8f9fa;color:#555f6a;font-size:12px;text-transform:uppercase;letter-spacing:.02em}tbody tr:hover{background:#fafbfc}.name{font-weight:650}.sub{font-size:12px;color:var(--muted)}.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;font-size:12px;background:#edf0f3;color:#4e5863}.badge.green{background:#e6f5ed;color:#176b42}.badge.yellow{background:#fff3d6;color:#8b5a00}.badge.red{background:#fde8e8;color:#a61d24}
+.filterbar{display:flex;gap:9px;margin-bottom:12px}.filterbar input,.filterbar select{border:1px solid var(--line);background:#fff;border-radius:8px;padding:9px 11px}.filterbar input{min-width:280px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{display:grid;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:#5d6670;font-weight:650}.field input,.field select,.field textarea,.inline-input{width:100%;border:1px solid #cfd5db;border-radius:7px;padding:9px;background:#fff}.field textarea{min-height:84px;resize:vertical}.check{display:flex;align-items:center;gap:8px}
+.drawer-back{position:fixed;inset:0;z-index:30;background:rgba(18,22,27,.35);display:flex;justify-content:flex-end}.drawer{width:min(680px,96vw);height:100%;overflow:auto;background:#fff;box-shadow:-15px 0 45px rgba(0,0,0,.15);padding:22px}.drawer-head{display:flex;gap:10px;align-items:center;margin-bottom:18px}.drawer-head h2{margin:0}.drawer-head button{margin-left:auto}.drawer-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--line)}
+.req-list{display:grid;gap:8px;max-height:350px;overflow:auto}.req-item{border:1px solid var(--line);padding:10px;border-radius:8px;display:flex;gap:9px;align-items:flex-start}.preview{white-space:pre-wrap;min-height:480px;background:#fbfbfc;border:1px solid var(--line);border-radius:8px;padding:16px;font-family:Segoe UI,Arial,sans-serif}
+.order-grid{display:grid;gap:12px}.order{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr auto;gap:10px;align-items:center}.order input,.order select{border:1px solid var(--line);border-radius:7px;padding:8px;width:100%}
+.constructor{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px}.canvas{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.canvas svg{display:block;width:100%;height:600px;touch-action:none;background-color:#fafbfc;background-image:linear-gradient(#e9edf1 1px,transparent 1px),linear-gradient(90deg,#e9edf1 1px,transparent 1px);background-size:25px 25px}.side-stack{display:grid;gap:12px;align-content:start}.roller-line{fill:none;stroke:#69737e;stroke-width:5;stroke-linejoin:round}.roller{fill:#fff;stroke:#2d3339;stroke-width:3}.roller.selected{stroke:var(--red);stroke-width:5}.belt-path{fill:none;stroke:var(--red);stroke-width:3;stroke-dasharray:9 5}
+.attachments{display:flex;gap:8px;flex-wrap:wrap}.thumb{width:94px;height:70px;object-fit:contain;border:1px solid var(--line);border-radius:6px;background:#fff}.material-grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+.notice{padding:12px 14px;border:1px solid #ecd49c;background:#fff8e7;color:#72501a;border-radius:8px;margin-bottom:14px}.success{border-color:#bce2cd;background:#eef9f3;color:#1d6842}.migration-log{font-size:12px;max-height:220px;overflow:auto;white-space:pre-wrap}.toast{position:fixed;z-index:60;left:50%;bottom:25px;transform:translateX(-50%);background:#252a30;color:#fff;padding:10px 15px;border-radius:8px;box-shadow:var(--shadow)}
+.hidden{display:none!important}
+@media(max-width:1000px){.app{grid-template-columns:76px minmax(0,1fr)}.brand span,.brand b,.nav button span,.privacy{display:none}.nav button{text-align:center}.stats{grid-template-columns:repeat(2,1fr)}.two,.constructor{grid-template-columns:1fr}.constructor .canvas svg{height:440px}}
+@media(max-width:650px){.topbar{padding:10px;flex-wrap:wrap}.content{padding:14px}.stats{grid-template-columns:1fr 1fr}.page-head{display:block}.page-head .actions{margin-top:12px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.filterbar{display:grid}.filterbar input{min-width:0}.order{grid-template-columns:1fr}.app{grid-template-columns:1fr}.sidebar{position:static;height:auto;padding:10px}.brand,.privacy{display:none}.nav{grid-template-columns:repeat(3,1fr)}.nav button span{display:inline}.main{min-width:0}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand"><b>Реестр лент</b><span>автономная версия</span></div>
+  <nav class="nav" id="nav">
+    <button data-page="dashboard" class="active">▦ <span>Обзор</span></button>
+    <button data-page="registry">▤ <span>Реестр</span></button>
+    <button data-page="requests">✉ <span>Заявки</span></button>
+    <button data-page="orders">◫ <span>Заказы</span></button>
+    <button data-page="constructor">◇ <span>Конструктор</span></button>
+    <button data-page="materials">▧ <span>Материалы</span></button>
+  </nav>
+  <div class="privacy">Данные находятся только в этом браузере и в файлах, которые вы скачаете.</div>
+</aside>
+<main class="main">
+  <header class="topbar">
+    <button class="btn" id="importHtmlBtn">Импорт старого HTML</button>
+    <button class="btn" id="restoreBtn">Восстановить JSON</button>
+    <span class="spacer"></span>
+    <button class="btn" id="backupBtn">Резервная копия</button>
+    <button class="btn primary" id="exportAppBtn">Скачать приложение с данными</button>
+    <input type="file" id="htmlInput" accept=".html,.htm" class="hidden">
+    <input type="file" id="jsonInput" accept=".json,application/json" class="hidden">
+  </header>
+  <section class="content" id="content"></section>
+</main>
+</div>
+<div id="drawer"></div>
+<div id="toast" class="toast hidden"></div>
+<script id="embedded-state" type="application/json">{}</script>
+<script>
+(function(){
+"use strict";
+
+var APP_VERSION = 2;
+var DEFAULT_STATE = {
+  version: APP_VERSION,
+  meta: {datasetId:"starter", title:"Реестр конвейерных лент", createdAt:"", updatedAt:""},
+  belts: [], orders: [], materials: [], designs: [], attachments: [], migration: null
+};
+var STATUS = ["Требуется запрос","Запрос отправлен","Получено предложение","Согласовано","В производстве","В пути","Получено"];
+var page = "dashboard";
+var state;
+var storageKey;
+var ui = {search:"", stock:"all", requestIds:[], selectedRoller:null, drag:null};
+
+function clone(v){return JSON.parse(JSON.stringify(v));}
+function id(prefix){return (prefix||"id")+"_"+Date.now().toString(36)+"_"+Math.random().toString(36).slice(2,8);}
+function now(){return new Date().toISOString();}
+function num(v){
+  if(v===null||v===undefined||v==="") return null;
+  var m=String(v).replace(/\s/g,"").replace(",",".").match(/-?\d+(?:\.\d+)?/);
+  return m?Number(m[0]):null;
+}
+function nums(v){
+  var a=String(v===undefined?"":v).replace(/,/g,".").match(/\d+(?:\.\d+)?/g);
+  return a?a.map(Number):[];
+}
+function esc(v){return String(v===null||v===undefined?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+function attr(v){return esc(v);}
+function toast(msg){
+  var el=document.getElementById("toast"); el.textContent=msg; el.classList.remove("hidden");
+  clearTimeout(toast.timer); toast.timer=setTimeout(function(){el.classList.add("hidden");},2600);
+}
+function safeParse(text){try{return JSON.parse(text);}catch(e){return null;}}
+function normalizeState(s){
+  s=s&&typeof s==="object"?s:{};
+  var out=clone(DEFAULT_STATE);
+  out.version=APP_VERSION;
+  out.meta=Object.assign(out.meta,s.meta||{});
+  out.meta.datasetId=out.meta.datasetId||id("dataset");
+  out.meta.createdAt=out.meta.createdAt||now();
+  out.meta.updatedAt=s.meta&&s.meta.updatedAt||now();
+  out.belts=Array.isArray(s.belts)?s.belts.map(normalizeBelt):[];
+  out.orders=Array.isArray(s.orders)?s.orders.map(normalizeOrder):[];
+  out.materials=Array.isArray(s.materials)?s.materials.map(normalizeMaterial):[];
+  out.designs=Array.isArray(s.designs)?s.designs.map(normalizeDesign):[];
+  out.attachments=Array.isArray(s.attachments)?s.attachments.filter(function(a){return a&&/^data:image\//i.test(a.data||"");}):[];
+  out.migration=s.migration||null;
+  return out;
+}
+function normalizeBelt(b){
+  b=b&&typeof b==="object"?b:{};
+  return {
+    id:b.id||id("belt"), line:b.line||"", name:b.name||"Транспортерная лента", conveyorType:b.conveyorType||"",
+    lengthMm:num(b.lengthMm), widthMm:num(b.widthMm), thicknessMin:num(b.thicknessMin), thicknessMax:num(b.thicknessMax),
+    drumDiameterMm:num(b.drumDiameterMm), quantity:num(b.quantity)||1, stock:num(b.stock)||0, minStock:num(b.minStock)||0,
+    endless:b.endless!==false, joint:b.joint||"", material:b.material||"", purpose:b.purpose||"",
+    tempMin:num(b.tempMin), tempMax:num(b.tempMax), fluids:b.fluids||"",
+    sidewall:Object.assign({enabled:false,height:null,edgeOffset:null,pitch:null},b.sidewall||{}),
+    cleat:Object.assign({enabled:false,type:"",height:null,pitch:null,gap:null},b.cleat||{}),
+    guide:Object.assign({enabled:false,branch:"холостая",position:"по центру",section:""},b.guide||{}),
+    attachmentIds:Array.isArray(b.attachmentIds)?b.attachmentIds:[], notes:b.notes||"", source:b.source||""
+  };
+}
+function normalizeOrder(o){
+  o=o&&typeof o==="object"?o:{};
+  return {id:o.id||id("order"),title:o.title||"Новый заказ",supplier:o.supplier||"",status:STATUS.indexOf(o.status)>=0?o.status:STATUS[0],quantity:num(o.quantity)||1,price:num(o.price),requestNo:o.requestNo||"",orderDate:o.orderDate||"",eta:o.eta||"",responsible:o.responsible||"",notes:o.notes||""};
+}
+function normalizeMaterial(m){
+  m=m&&typeof m==="object"?m:{};
+  return {id:m.id||id("mat"),name:m.name||"Материал",properties:m.properties||"",use:m.use||"",limits:m.limits||"",notes:m.notes||""};
+}
+function normalizeDesign(d){
+  d=d&&typeof d==="object"?d:{};
+  return {id:d.id||id("design"),name:d.name||"Эскиз траектории",rollers:Array.isArray(d.rollers)?d.rollers.map(function(r){return {x:num(r.x)||100,y:num(r.y)||100,d:num(r.d)||100};}):[]};
+}
+function load(){
+  var embedded=safeParse(document.getElementById("embedded-state").textContent.trim())||{};
+  var seed=normalizeState(Object.keys(embedded).length?embedded:DEFAULT_STATE);
+  storageKey="belt_registry_v2_"+seed.meta.datasetId;
+  var stored=safeParse(localStorage.getItem(storageKey)||"");
+  state=normalizeState(stored||seed);
+}
+function save(){
+  state.meta.updatedAt=now();
+  try{localStorage.setItem(storageKey,JSON.stringify(state));}catch(e){toast("Хранилище браузера заполнено. Скачайте приложение с данными.");}
+}
+function replaceState(s){
+  state=normalizeState(s);
+  if(!state.meta.datasetId||state.meta.datasetId==="starter") state.meta.datasetId=id("dataset");
+  storageKey="belt_registry_v2_"+state.meta.datasetId;
+  save(); render();
+}
+function download(name,text,type){
+  var blob=new Blob([text],{type:type||"text/plain;charset=utf-8"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1000);
+}
+function fmt(v,suffix){return v===null||v===undefined||v===""?"—":String(v).replace(".",",")+(suffix||"");}
+function stockClass(b){return b.stock<=0?"red":(b.stock<=b.minStock?"yellow":"green");}
+function setPage(next){
+  page=next;
+  Array.from(document.querySelectorAll("#nav button")).forEach(function(b){b.classList.toggle("active",b.dataset.page===page);});
+  render();
+}
+document.getElementById("nav").addEventListener("click",function(e){var b=e.target.closest("button[data-page]");if(b)setPage(b.dataset.page);});
+document.getElementById("importHtmlBtn").onclick=function(){document.getElementById("htmlInput").click();};
+document.getElementById("restoreBtn").onclick=function(){document.getElementById("jsonInput").click();};
+document.getElementById("backupBtn").onclick=backupJson;
+document.getElementById("exportAppBtn").onclick=exportAutonomous;
+document.getElementById("htmlInput").addEventListener("change",importHtmlFile);
+document.getElementById("jsonInput").addEventListener("change",restoreJson);
+
+function header(title,desc,actions){
+  return '<div class="page-head"><div><h1>'+esc(title)+'</h1><p>'+esc(desc||"")+'</p></div><div class="actions">'+(actions||"")+'</div></div>';
+}
+function render(){
+  var c=document.getElementById("content");
+  if(page==="dashboard") c.innerHTML=renderDashboard();
+  if(page==="registry") c.innerHTML=renderRegistry();
+  if(page==="requests") c.innerHTML=renderRequests();
+  if(page==="orders") c.innerHTML=renderOrders();
+  if(page==="constructor") c.innerHTML=renderConstructor();
+  if(page==="materials") c.innerHTML=renderMaterials();
+  bindPage();
+}
+function renderDashboard(){
+  var low=state.belts.filter(function(b){return b.stock<=b.minStock;}).length;
+  var open=state.orders.filter(function(o){return o.status!=="Получено";}).length;
+  var drawings=state.attachments.length;
+  var migration=state.migration?'<div class="notice success"><b>Последний импорт:</b> '+esc(state.migration.summary||"выполнен")+'<div class="migration-log">'+esc((state.migration.log||[]).join("\n"))+'</div></div>':'';
+  return header("Обзор","Состояние реестра, запасов и заказов")+
+    migration+
+    '<div class="grid stats">'+
+      '<div class="card stat"><b>'+state.belts.length+'</b><span>позиций в реестре</span></div>'+
+      '<div class="card stat '+(low?"bad":"good")+'"><b>'+low+'</b><span>требуют пополнения</span></div>'+
+      '<div class="card stat"><b>'+open+'</b><span>открытых заказов</span></div>'+
+      '<div class="card stat"><b>'+drawings+'</b><span>вложенных изображений</span></div>'+
+    '</div>'+
+    '<div class="grid two" style="margin-top:16px">'+
+      '<div class="card"><h2 class="section-title">Позиции с низким запасом</h2>'+renderLowStock()+'</div>'+
+      '<div class="card"><h2 class="section-title">Как начать</h2><p>Нажмите <b>«Импорт старого HTML»</b> и выберите прежний автономный реестр. Импорт происходит на этом компьютере.</p><p class="muted">После проверки данных скачайте новое приложение кнопкой вверху. Оно будет работать без GitHub, OpenAI и интернета.</p></div>'+
+    '</div>';
+}
+function renderLowStock(){
+  var list=state.belts.filter(function(b){return b.stock<=b.minStock;}).slice(0,8);
+  if(!list.length)return '<div class="empty"><b>Критичных остатков нет</b>Или реестр пока пуст.</div>';
+  return list.map(function(b){return '<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)"><span><b>'+esc(b.line||"Без линии")+'</b> · '+esc(b.name)+'</span><span class="badge '+stockClass(b)+'">'+fmt(b.stock," шт.")+'</span></div>';}).join("");
+}
+function renderRegistry(){
+  var q=ui.search.toLowerCase();
+  var list=state.belts.filter(function(b){
+    var ok=!q||(b.line+" "+b.name+" "+b.purpose+" "+b.notes).toLowerCase().indexOf(q)>=0;
+    if(ui.stock==="low")ok=ok&&b.stock<=b.minStock;
+    if(ui.stock==="ok")ok=ok&&b.stock>b.minStock;
+    return ok;
+  });
+  var rows=list.map(function(b){
+    return '<tr><td><div class="name">'+esc(b.line||"—")+'</div><div class="sub">'+esc(b.conveyorType||"")+'</div></td>'+
+      '<td><div class="name">'+esc(b.name)+'</div><div class="sub">'+esc(b.purpose||"")+'</div></td>'+
+      '<td>'+fmt(b.lengthMm," мм")+'</td><td>'+fmt(b.widthMm," мм")+'</td>'+
+      '<td>'+thickness(b)+'</td><td>'+fmt(b.drumDiameterMm," мм")+'</td>'+
+      '<td><span class="badge '+stockClass(b)+'">'+fmt(b.stock," шт.")+'</span><div class="sub">мин. '+fmt(b.minStock," шт.")+'</div></td>'+
+      '<td>'+b.attachmentIds.length+'</td><td><button class="btn small edit-belt" data-id="'+attr(b.id)+'">Открыть</button></td></tr>';
+  }).join("");
+  return header("Реестр лент","Размеры, исполнение, остатки и чертежи",'<button class="btn" id="csvBtn">CSV для Excel</button><button class="btn primary" id="addBeltBtn">Добавить ленту</button>')+
+    '<div class="filterbar"><input id="searchBelts" placeholder="Поиск по линии, названию или назначению" value="'+attr(ui.search)+'"><select id="stockFilter"><option value="all">Все остатки</option><option value="low" '+(ui.stock==="low"?"selected":"")+'>Низкий запас</option><option value="ok" '+(ui.stock==="ok"?"selected":"")+'>Запас в норме</option></select></div>'+
+    '<div class="table-wrap"><table><thead><tr><th>Линия</th><th>Наименование</th><th>Длина</th><th>Ширина</th><th>Толщина</th><th>Барабан</th><th>Остаток</th><th>Файлы</th><th></th></tr></thead><tbody>'+
+    (rows||'<tr><td colspan="9"><div class="empty"><b>Реестр пуст</b>Импортируйте старый HTML или добавьте первую ленту.</div></td></tr>')+'</tbody></table></div>';
+}
+function thickness(b){
+  if(b.thicknessMin===null&&b.thicknessMax===null)return "—";
+  if(b.thicknessMax!==null&&b.thicknessMax!==b.thicknessMin)return fmt(b.thicknessMin)+"–"+fmt(b.thicknessMax)+" мм";
+  return fmt(b.thicknessMin!==null?b.thicknessMin:b.thicknessMax," мм");
+}
+function renderRequests(){
+  var items=state.belts.map(function(b){
+    return '<label class="req-item"><input type="checkbox" class="req-check" value="'+attr(b.id)+'" '+(ui.requestIds.indexOf(b.id)>=0?"checked":"")+'><span><b>'+esc(b.line||"Без линии")+'</b><br><span class="muted">'+esc(b.name)+' · '+fmt(b.lengthMm,"×")+fmt(b.widthMm," мм")+'</span></span></label>';
+  }).join("");
+  return header("Заявка поставщику","Выберите одну или несколько лент — текст сформируется автоматически",'<button class="btn" id="copyReqBtn">Копировать текст</button><button class="btn primary" id="downloadReqBtn">Скачать TXT</button>')+
+    '<div class="grid two"><div class="card"><h2 class="section-title">Ленты в запросе</h2><div class="req-list">'+(items||'<div class="empty"><b>Нет лент</b>Сначала заполните реестр.</div>')+'</div></div>'+
+    '<div><div id="requestWarnings"></div><div class="preview" id="requestPreview">'+esc(requestText())+'</div></div></div>';
+}
+function requestText(){
+  var list=state.belts.filter(function(b){return ui.requestIds.indexOf(b.id)>=0;});
+  if(!list.length)return "Выберите ленты слева.";
+  var out=["Добрый день.","","Нужны транспортерные ленты. Прошу проработать вопрос и направить коммерческое предложение на поставку. Доставку до нашего предприятия прошу включить в стоимость.","","Общие требования: ленты должны быть устойчивы к минеральным и синтетическим маслам, смазочно-охлаждающим жидкостям. Температура эксплуатации: от +10 до +50 °C.",""];
+  list.forEach(function(b,i){
+    out.push((i+1)+". "+(b.name||"Транспортерная лента")+(b.line?" для "+b.line:"")+".");
+    if(b.quantity)out.push("   Необходимое количество: "+b.quantity+" шт.");
+    if(b.drumDiameterMm!==null)out.push("   Диаметр барабанов: "+fmt(b.drumDiameterMm," мм")+".");
+    out.push("   Исполнение: "+(b.endless?"бесконечная":"не бесконечная")+(b.joint?". Соединение: "+b.joint:"")+".");
+    if(b.lengthMm!==null)out.push("   Длина по замкнутому контуру: "+fmt(b.lengthMm," мм")+".");
+    if(b.widthMm!==null)out.push("   Ширина: "+fmt(b.widthMm," мм")+".");
+    if(b.thicknessMin!==null||b.thicknessMax!==null)out.push("   Толщина: "+thickness(b)+".");
+    if(b.sidewall.enabled)out.push("   Гофроборт с двух сторон"+(b.sidewall.height?" высотой "+fmt(b.sidewall.height," мм"):"")+(b.sidewall.edgeOffset?", отступ от края "+fmt(b.sidewall.edgeOffset," мм"):"")+(b.sidewall.pitch?", шаг "+fmt(b.sidewall.pitch," мм"):"")+".");
+    if(b.cleat.enabled)out.push("   Поперечные профили"+(b.cleat.type?" ("+b.cleat.type+")":"")+(b.cleat.height?" высотой "+fmt(b.cleat.height," мм"):"")+(b.cleat.pitch?", шаг "+fmt(b.cleat.pitch," мм"):"")+(b.cleat.gap?", зазор между секциями "+fmt(b.cleat.gap," мм"):"")+".");
+    if(b.guide.enabled)out.push("   Центрующий профиль на "+b.guide.branch+" ветви, "+b.guide.position+(b.guide.section?", сечение "+b.guide.section:"")+".");
+    if(b.material)out.push("   Материал/исполнение: "+b.material+".");
+    if(b.purpose)out.push("   Назначение: "+b.purpose+".");
+    if(b.fluids)out.push("   Контакт со средами: "+b.fluids+".");
+    if(b.tempMin!==null||b.tempMax!==null)out.push("   Температура эксплуатации: от "+fmt(b.tempMin,"")+" до "+fmt(b.tempMax," °C")+".");
+    if(b.notes)out.push("   Дополнительно: "+b.notes);
+    if(b.attachmentIds.length)out.push("   Эскиз прилагается.");
+    out.push("");
+  });
+  return out.join("\n");
+}
+function requestWarnings(){
+  var list=state.belts.filter(function(b){return ui.requestIds.indexOf(b.id)>=0;});
+  var miss=[];
+  list.forEach(function(b){
+    var p=[];if(b.lengthMm===null)p.push("длина");if(b.widthMm===null)p.push("ширина");if(b.thicknessMin===null&&b.thicknessMax===null)p.push("толщина");if(b.drumDiameterMm===null)p.push("диаметр барабанов");
+    if(p.length)miss.push((b.line||b.name)+": "+p.join(", "));
+  });
+  return miss.length?'<div class="notice"><b>Стоит уточнить перед отправкой:</b><br>'+miss.map(esc).join("<br>")+'</div>':'<div class="notice success">Обязательные размеры выбранных лент заполнены.</div>';
+}
+function renderOrders(){
+  var cards=state.orders.map(function(o){
+    return '<div class="card order" data-order="'+attr(o.id)+'">'+
+      '<div><input class="inline-input order-field" data-k="title" value="'+attr(o.title)+'"><div class="sub">№ <input class="order-field" data-k="requestNo" value="'+attr(o.requestNo)+'" style="border:0;border-bottom:1px solid var(--line);width:120px"></div></div>'+
+      '<input class="order-field" data-k="supplier" placeholder="Поставщик" value="'+attr(o.supplier)+'">'+
+      '<select class="order-field" data-k="status">'+STATUS.map(function(s){return '<option '+(s===o.status?"selected":"")+'>'+esc(s)+'</option>';}).join("")+'</select>'+
+      '<div><input class="order-field" data-k="eta" type="date" value="'+attr(o.eta)+'"><div class="sub">обещанная поставка</div></div>'+
+      '<button class="btn small danger delete-order">Удалить</button></div>';
+  }).join("");
+  return header("Заказы","Контроль запроса, согласования, производства и поставки",'<button class="btn primary" id="addOrderBtn">Добавить заказ</button>')+
+    '<div class="order-grid">'+(cards||'<div class="card empty"><b>Заказов пока нет</b>Добавьте заказ после отправки заявки поставщику.</div>')+'</div>';
+}
+function ensureDesign(){
+  if(!state.designs.length){state.designs.push(normalizeDesign({name:"Новый эскиз",rollers:[]}));save();}
+  return state.designs[0];
+}
+function renderConstructor(){
+  var d=ensureDesign(), points=d.rollers.map(function(r){return r.x+","+r.y;}).join(" ");
+  var rollers=d.rollers.map(function(r,i){return '<circle class="roller '+(ui.selectedRoller===i?"selected":"")+'" data-roller="'+i+'" cx="'+r.x+'" cy="'+r.y+'" r="'+Math.max(12,r.d/2)+'"></circle><text x="'+r.x+'" y="'+(r.y+4)+'" text-anchor="middle" font-size="12" pointer-events="none">Ø'+r.d+'</text>';}).join("");
+  var selected=ui.selectedRoller!==null?d.rollers[ui.selectedRoller]:null;
+  return header("Конструктор траектории","Выберите типовую схему или добавляйте и перемещайте ролики мышью",'<button class="btn" id="clearDesignBtn">Очистить</button><button class="btn primary" id="designToBeltBtn">Создать карточку ленты</button>')+
+    '<div class="constructor"><div class="canvas"><svg id="designSvg" viewBox="0 0 900 600" aria-label="Поле конструктора">'+
+      (points?'<polyline class="belt-path" points="'+points+'"></polyline>':'')+rollers+'</svg></div>'+
+      '<div class="side-stack"><div class="card"><h2 class="section-title">Типовые схемы</h2><div style="display:grid;gap:8px"><button class="btn template" data-template="straight">Прямая</button><button class="btn template" data-template="incline">Наклонная</button><button class="btn template" data-template="z">Z-образная</button></div></div>'+
+      '<div class="card"><h2 class="section-title">Выбранный ролик</h2>'+(selected?rollerEditor(selected):'<p class="muted">Щёлкните по ролику. Щелчок по пустому полю добавляет новый ролик.</p>')+'</div>'+
+      '<div class="card"><b>Оценка осевой длины:</b> '+fmt(designLength(d)," мм")+'<p class="muted">Это геометрическая оценка по центрам роликов, не окончательная длина бесконечной ленты. Итоговый размер необходимо подтвердить замером или расчётом поставщика.</p></div></div></div>';
+}
+function rollerEditor(r){
+  return '<div class="form-grid"><div class="field"><label>X, мм</label><input class="roller-field" data-k="x" type="number" value="'+r.x+'"></div><div class="field"><label>Y, мм</label><input class="roller-field" data-k="y" type="number" value="'+r.y+'"></div><div class="field full"><label>Диаметр, мм</label><input class="roller-field" data-k="d" type="number" min="1" value="'+r.d+'"></div></div><button class="btn small danger" id="deleteRollerBtn" style="margin-top:10px">Удалить ролик</button>';
+}
+function designLength(d){
+  var sum=0;for(var i=1;i<d.rollers.length;i++){var a=d.rollers[i-1],b=d.rollers[i];sum+=Math.hypot(b.x-a.x,b.y-a.y);}return Math.round(sum);
+}
+function renderMaterials(){
+  var cards=state.materials.map(function(m){
+    return '<div class="card" data-material="'+attr(m.id)+'"><h2 class="section-title"><input class="inline-input material-field" data-k="name" value="'+attr(m.name)+'"></h2><div class="field"><label>Свойства</label><textarea class="material-field" data-k="properties">'+esc(m.properties)+'</textarea></div><div class="field"><label>Применение</label><textarea class="material-field" data-k="use">'+esc(m.use)+'</textarea></div><button class="btn small danger delete-material" style="margin-top:10px">Удалить</button></div>';
+  }).join("");
+  return header("Справочник материалов","Собственные заметки по покрытиям, маслостойкости и ограничениям",'<button class="btn primary" id="addMaterialBtn">Добавить материал</button>')+
+    '<div class="grid material-grid">'+(cards||'<div class="card empty"><b>Справочник пуст</b>Добавьте используемые материалы и требования к ним.</div>')+'</div>';
+}
+function bindPage(){
+  if(page==="registry"){
+    document.getElementById("addBeltBtn").onclick=function(){openBelt(normalizeBelt({}));};
+    document.getElementById("csvBtn").onclick=exportCsv;
+    document.getElementById("searchBelts").oninput=function(e){ui.search=e.target.value;render();};
+    document.getElementById("stockFilter").onchange=function(e){ui.stock=e.target.value;render();};
+    Array.from(document.querySelectorAll(".edit-belt")).forEach(function(b){b.onclick=function(){openBelt(state.belts.find(function(x){return x.id===b.dataset.id;}));};});
+  }
+  if(page==="requests"){
+    Array.from(document.querySelectorAll(".req-check")).forEach(function(ch){ch.onchange=function(){if(ch.checked)ui.requestIds.push(ch.value);else ui.requestIds=ui.requestIds.filter(function(x){return x!==ch.value;});document.getElementById("requestPreview").textContent=requestText();document.getElementById("requestWarnings").innerHTML=requestWarnings();};});
+    document.getElementById("requestWarnings").innerHTML=requestWarnings();
+    document.getElementById("copyReqBtn").onclick=function(){navigator.clipboard?navigator.clipboard.writeText(requestText()).then(function(){toast("Текст скопирован");}):toast("Копирование недоступно — выделите текст вручную");};
+    document.getElementById("downloadReqBtn").onclick=function(){download("Заявка_на_ленты.txt",requestText());};
+  }
+  if(page==="orders"){
+    document.getElementById("addOrderBtn").onclick=function(){state.orders.unshift(normalizeOrder({}));save();render();};
+    Array.from(document.querySelectorAll("[data-order]")).forEach(function(card){
+      var o=state.orders.find(function(x){return x.id===card.dataset.order;});
+      Array.from(card.querySelectorAll(".order-field")).forEach(function(inp){inp.onchange=function(){o[inp.dataset.k]=inp.value;save();};});
+      card.querySelector(".delete-order").onclick=function(){if(confirm("Удалить заказ?")){state.orders=state.orders.filter(function(x){return x.id!==o.id;});save();render();}};
+    });
+  }
+  if(page==="constructor")bindConstructor();
+  if(page==="materials"){
+    document.getElementById("addMaterialBtn").onclick=function(){state.materials.unshift(normalizeMaterial({}));save();render();};
+    Array.from(document.querySelectorAll("[data-material]")).forEach(function(card){
+      var m=state.materials.find(function(x){return x.id===card.dataset.material;});
+      Array.from(card.querySelectorAll(".material-field")).forEach(function(inp){inp.onchange=function(){m[inp.dataset.k]=inp.value;save();};});
+      card.querySelector(".delete-material").onclick=function(){if(confirm("Удалить материал?")){state.materials=state.materials.filter(function(x){return x.id!==m.id;});save();render();}};
+    });
+  }
+}
+function openBelt(b){
+  if(!b)return;
+  var exists=state.belts.some(function(x){return x.id===b.id;});
+  var d=document.getElementById("drawer");
+  d.innerHTML='<div class="drawer-back"><div class="drawer"><div class="drawer-head"><h2>'+(exists?"Карточка ленты":"Новая лента")+'</h2><button class="btn close-drawer">Закрыть</button></div>'+
+    '<form id="beltForm"><div class="form-grid">'+
+      field("line","Линия / оборудование",b.line)+field("name","Наименование",b.name)+
+      field("conveyorType","Тип конвейера",b.conveyorType)+field("quantity","Требуемое количество, шт.",b.quantity,"number")+
+      field("lengthMm","Длина по замкнутому контуру, мм",b.lengthMm,"number")+field("widthMm","Ширина, мм",b.widthMm,"number")+
+      field("thicknessMin","Толщина от, мм",b.thicknessMin,"number")+field("thicknessMax","Толщина до, мм",b.thicknessMax,"number")+
+      field("drumDiameterMm","Диаметр барабанов, мм",b.drumDiameterMm,"number")+field("joint","Способ соединения",b.joint)+
+      field("stock","Остаток, шт.",b.stock,"number")+field("minStock","Минимальный запас, шт.",b.minStock,"number")+
+      field("material","Материал / требования",b.material,"text","full")+field("purpose","Назначение",b.purpose,"textarea","full")+
+      field("fluids","Контакт со средами",b.fluids,"text","full")+field("tempMin","Температура от, °C",b.tempMin,"number")+field("tempMax","Температура до, °C",b.tempMax,"number")+
+      '<div class="field full"><label class="check"><input type="checkbox" name="sidewallEnabled" '+(b.sidewall.enabled?"checked":"")+'> Гофроборт с двух сторон</label></div>'+
+      field("sidewallHeight","Высота гофроборта, мм",b.sidewall.height,"number")+field("sidewallEdgeOffset","Отступ от края, мм",b.sidewall.edgeOffset,"number")+field("sidewallPitch","Шаг гофроборта, мм",b.sidewall.pitch,"number")+
+      '<div class="field full"><label class="check"><input type="checkbox" name="cleatEnabled" '+(b.cleat.enabled?"checked":"")+'> Поперечные профили / лопатки</label></div>'+
+      field("cleatType","Тип профилей",b.cleat.type)+field("cleatHeight","Высота профилей, мм",b.cleat.height,"number")+field("cleatPitch","Шаг профилей, мм",b.cleat.pitch,"number")+field("cleatGap","Зазор между секциями, мм",b.cleat.gap,"number")+
+      '<div class="field full"><label class="check"><input type="checkbox" name="guideEnabled" '+(b.guide.enabled?"checked":"")+'> Центрующий профиль</label></div>'+
+      field("guideBranch","Ветвь",b.guide.branch)+field("guidePosition","Расположение",b.guide.position)+field("guideSection","Сечение / типоразмер",b.guide.section)+
+      field("notes","Примечания",b.notes,"textarea","full")+
+    '</div><div class="field full" style="margin-top:14px"><label>Вложенные изображения</label><div class="attachments">'+beltThumbs(b)+'</div><input type="file" id="beltFiles" accept="image/*" multiple></div>'+
+    '<div class="drawer-foot">'+(exists?'<button type="button" class="btn danger" id="deleteBeltBtn">Удалить</button>':'')+'<button type="button" class="btn close-drawer">Отмена</button><button class="btn primary" type="submit">Сохранить</button></div></form></div></div>';
+  Array.from(d.querySelectorAll(".close-drawer")).forEach(function(x){x.onclick=closeDrawer;});
+  if(exists)d.querySelector("#deleteBeltBtn").onclick=function(){if(confirm("Удалить карточку ленты?")){state.belts=state.belts.filter(function(x){return x.id!==b.id;});save();closeDrawer();render();}};
+  d.querySelector("#beltForm").onsubmit=function(e){e.preventDefault();saveBeltForm(b,exists);};
+  d.querySelector("#beltFiles").onchange=function(e){addBeltFiles(b,e.target.files);};
+}
+function field(name,label,value,type,wide){
+  type=type||"text";var cls="field"+(wide==="full"||type==="textarea"?" full":"");
+  if(type==="textarea")return '<div class="'+cls+'"><label>'+esc(label)+'</label><textarea name="'+attr(name)+'">'+esc(value===null?"":value)+'</textarea></div>';
+  return '<div class="'+cls+'"><label>'+esc(label)+'</label><input name="'+attr(name)+'" type="'+type+'" step="any" value="'+attr(value===null?"":value)+'"></div>';
+}
+function beltThumbs(b){
+  return b.attachmentIds.map(function(aid){var a=state.attachments.find(function(x){return x.id===aid;});return a?'<img class="thumb" src="'+attr(a.data)+'" title="'+attr(a.name||"Изображение")+'">':"";}).join("")||'<span class="muted">Нет изображений</span>';
+}
+function addBeltFiles(b,files){
+  Array.from(files).forEach(function(file){var r=new FileReader();r.onload=function(){var a={id:id("att"),name:file.name,data:r.result};state.attachments.push(a);b.attachmentIds.push(a.id);save();openBelt(b);};r.readAsDataURL(file);});
+}
+function saveBeltForm(b,exists){
+  var f=new FormData(document.getElementById("beltForm"));
+  ["line","name","conveyorType","joint","material","purpose","fluids","notes"].forEach(function(k){b[k]=f.get(k)||"";});
+  ["quantity","lengthMm","widthMm","thicknessMin","thicknessMax","drumDiameterMm","stock","minStock","tempMin","tempMax"].forEach(function(k){b[k]=num(f.get(k));});
+  b.sidewall={enabled:f.has("sidewallEnabled"),height:num(f.get("sidewallHeight")),edgeOffset:num(f.get("sidewallEdgeOffset")),pitch:num(f.get("sidewallPitch"))};
+  b.cleat={enabled:f.has("cleatEnabled"),type:f.get("cleatType")||"",height:num(f.get("cleatHeight")),pitch:num(f.get("cleatPitch")),gap:num(f.get("cleatGap"))};
+  b.guide={enabled:f.has("guideEnabled"),branch:f.get("guideBranch")||"холостая",position:f.get("guidePosition")||"по центру",section:f.get("guideSection")||""};
+  if(!exists)state.belts.unshift(b);save();closeDrawer();render();toast("Карточка сохранена");
+}
+function closeDrawer(){document.getElementById("drawer").innerHTML="";}
+
+function bindConstructor(){
+  var d=ensureDesign(),svg=document.getElementById("designSvg");
+  function xy(e){var p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;var q=p.matrixTransform(svg.getScreenCTM().inverse());return {x:Math.round(q.x),y:Math.round(q.y)};}
+  svg.onpointerdown=function(e){
+    var circle=e.target.closest&&e.target.closest("[data-roller]");
+    if(circle){ui.selectedRoller=Number(circle.dataset.roller);ui.drag={index:ui.selectedRoller,start:xy(e),moved:false};svg.setPointerCapture(e.pointerId);render();return;}
+    var p=xy(e);d.rollers.push({x:p.x,y:p.y,d:100});ui.selectedRoller=d.rollers.length-1;save();render();
+  };
+  svg.onpointermove=function(e){if(!ui.drag)return;var p=xy(e),r=d.rollers[ui.drag.index];if(!r)return;r.x=p.x;r.y=p.y;ui.drag.moved=true;save();render();};
+  svg.onpointerup=function(){ui.drag=null;};
+  Array.from(document.querySelectorAll(".template")).forEach(function(b){b.onclick=function(){applyTemplate(b.dataset.template);};});
+  document.getElementById("clearDesignBtn").onclick=function(){if(confirm("Очистить эскиз?")){d.rollers=[];ui.selectedRoller=null;save();render();}};
+  document.getElementById("designToBeltBtn").onclick=function(){
+    var line=prompt("Линия или оборудование:","");if(line===null)return;
+    var b=normalizeBelt({line:line,name:"Транспортерная лента",notes:"Карточка создана из конструктора. Осевая оценка траектории: "+designLength(d)+" мм; окончательную длину требуется уточнить."});
+    state.belts.unshift(b);save();setPage("registry");openBelt(b);
+  };
+  if(ui.selectedRoller!==null&&d.rollers[ui.selectedRoller]){
+    Array.from(document.querySelectorAll(".roller-field")).forEach(function(inp){inp.onchange=function(){d.rollers[ui.selectedRoller][inp.dataset.k]=num(inp.value)||0;save();render();};});
+    document.getElementById("deleteRollerBtn").onclick=function(){d.rollers.splice(ui.selectedRoller,1);ui.selectedRoller=null;save();render();};
+  }
+}
+function applyTemplate(t){
+  var d=ensureDesign();
+  if(t==="straight")d.rollers=[{x:150,y:300,d:100},{x:750,y:300,d:100}];
+  if(t==="incline")d.rollers=[{x:150,y:450,d:100},{x:750,y:150,d:100}];
+  if(t==="z")d.rollers=[{x:130,y:470,d:100},{x:330,y:470,d:100},{x:590,y:170,d:100},{x:780,y:170,d:100}];
+  ui.selectedRoller=null;save();render();
+}
+
+function backupJson(){download("Реестр_лент_резервная_копия.json",JSON.stringify(state,null,2),"application/json;charset=utf-8");}
+function restoreJson(e){
+  var file=e.target.files[0];e.target.value="";if(!file)return;
+  var r=new FileReader();r.onload=function(){var s=safeParse(r.result);if(!s){alert("Не удалось прочитать JSON.");return;}if(confirm("Заменить текущие данные содержимым резервной копии?")){replaceState(s);toast("Резервная копия восстановлена");}};r.readAsText(file,"utf-8");
+}
+function exportAutonomous(){
+  save();
+  var root=document.documentElement.cloneNode(true);
+  root.querySelector("#embedded-state").textContent=JSON.stringify(state).replace(/</g,"\\u003c");
+  var drawer=root.querySelector("#drawer");if(drawer)drawer.innerHTML="";
+  var toastEl=root.querySelector("#toast");if(toastEl)toastEl.classList.add("hidden");
+  var html="<!doctype html>\n"+root.outerHTML;
+  download("Реестр_конвейерных_лент_"+new Date().toISOString().slice(0,10)+".html",html,"text/html;charset=utf-8");
+  toast("Автономное приложение скачано");
+}
+function exportCsv(){
+  var cols=["Линия","Наименование","Длина, мм","Ширина, мм","Толщина от, мм","Толщина до, мм","Диаметр барабана, мм","Остаток, шт.","Минимум, шт.","Назначение"];
+  var rows=state.belts.map(function(b){return [b.line,b.name,b.lengthMm,b.widthMm,b.thicknessMin,b.thicknessMax,b.drumDiameterMm,b.stock,b.minStock,b.purpose];});
+  function cell(v){return '"'+String(v===null?"":v).replace(/"/g,'""')+'"';}
+  download("Реестр_лент.csv","\ufeff"+[cols].concat(rows).map(function(r){return r.map(cell).join(";");}).join("\r\n"),"text/csv;charset=utf-8");
+}
+
+function importHtmlFile(e){
+  var file=e.target.files[0];e.target.value="";if(!file)return;
+  var r=new FileReader();
+  r.onload=function(){
+    try{
+      var result=migrateHtml(String(r.result),file.name);
+      if(!result.belts.length){
+        alert("Автоматически распознать карточки лент не удалось. Исходный файл не изменён. Можно продолжить с пустой базой или передать разработчику обезличенный пример структуры.");
+        return;
+      }
+      var message="Найдено карточек: "+result.belts.length+". Изображений: "+result.attachments.length+". Заменить текущие данные результатом импорта?";
+      if(confirm(message)){replaceState(result);toast("Импорт завершён");}
+    }catch(err){console.error(err);alert("Ошибка импорта: "+err.message);}
+  };
+  r.readAsText(file,"utf-8");
+}
+function migrateHtml(html,fileName){
+  var log=[],records=[],jsonCandidates=[];
+  var doc=new DOMParser().parseFromString(html,"text/html");
+  Array.from(doc.querySelectorAll('script[type="application/json"]')).forEach(function(s){var v=safeParse(s.textContent);if(v)jsonCandidates.push(v);});
+  extractAssignedJson(html).forEach(function(v){jsonCandidates.push(v);});
+  jsonCandidates.forEach(function(v){collectRecordArrays(v,records);});
+  log.push("JSON-кандидатов: "+jsonCandidates.length);
+  var tableRecords=extractTables(doc);
+  records=records.concat(tableRecords);
+  log.push("Строк подходящих таблиц: "+tableRecords.length);
+  var seen={};
+  var belts=records.map(normalizeLegacyRecord).filter(function(b){
+    if(!b)return false;var k=[b.line,b.name,b.lengthMm,b.widthMm].join("|").toLowerCase();if(seen[k])return false;seen[k]=1;return true;
+  });
+  var imageMatches=html.match(/data:image\/[a-z0-9.+-]+;base64,[a-z0-9+\/=\r\n]+/gi)||[];
+  var imageSeen={},attachments=[];
+  imageMatches.forEach(function(data,i){data=data.replace(/\s/g,"");if(data.length<100||imageSeen[data])return;imageSeen[data]=1;attachments.push({id:id("att"),name:"Импортированное изображение "+(i+1),data:data});});
+  log.push("Встроенных изображений: "+attachments.length);
+  if(belts.length&&attachments.length){
+    var ids=attachments.map(function(a){return a.id;});
+    var directAssigned=false;
+    belts.forEach(function(b){if(b._rawImages&&b._rawImages.length){b.attachmentIds=ids.filter(function(aid){var a=attachments.find(function(x){return x.id===aid;});return b._rawImages.indexOf(a.data)>=0;});if(b.attachmentIds.length)directAssigned=true;}delete b._rawImages;});
+    if(!directAssigned&&belts.length===1)belts[0].attachmentIds=ids;
+  }
+  var out=normalizeState({meta:{datasetId:id("dataset"),title:"Импорт из "+fileName,createdAt:now(),updatedAt:now()},belts:belts,attachments:attachments,migration:{summary:"из "+fileName+" — "+belts.length+" карточек, "+attachments.length+" изображений",log:log}});
+  return out;
+}
+function extractAssignedJson(text){
+  var out=[],re=/(?:const|let|var)\s+[A-Za-z_$][\w$]*\s*=\s*/g,m;
+  while((m=re.exec(text))){
+    var p=re.lastIndex;while(/\s/.test(text[p]||""))p++;
+    if(text[p]!=="["&&text[p]!=="{")continue;
+    var end=balancedEnd(text,p);if(end<0)continue;
+    var v=safeParse(text.slice(p,end+1));if(v)out.push(v);
+    re.lastIndex=end+1;
+  }
+  return out;
+}
+function balancedEnd(s,start){
+  var open=s[start],close=open==="["?"]":"}",depth=0,quote=null,escapeNext=false;
+  for(var i=start;i<s.length;i++){
+    var c=s[i];
+    if(quote){if(escapeNext){escapeNext=false;continue;}if(c==="\\"){escapeNext=true;continue;}if(c===quote)quote=null;continue;}
+    if(c==='"'||c==="'"){quote=c;continue;}
+    if(c===open)depth++;else if(c===close){depth--;if(depth===0)return i;}
+  }return -1;
+}
+function collectRecordArrays(obj,out,seen){
+  if(!obj||typeof obj!=="object")return;seen=seen||new Set();if(seen.has(obj))return;seen.add(obj);
+  if(Array.isArray(obj)){
+    if(obj.length&&obj.every(function(x){return x&&typeof x==="object"&&!Array.isArray(x);})&&recordArrayScore(obj)>0){obj.forEach(function(x){out.push(x);});}
+    obj.slice(0,100).forEach(function(x){collectRecordArrays(x,out,seen);});
+  }else Object.keys(obj).slice(0,200).forEach(function(k){collectRecordArrays(obj[k],out,seen);});
+}
+function recordArrayScore(arr){
+  var sample=arr.slice(0,5),score=0;
+  sample.forEach(function(o){var keys=Object.keys(flatten(o)).map(canon).join(" ");if(/длин|length|ширин|width|лент|belt|линия|line/.test(keys))score++;});
+  return score;
+}
+function cellText(td){
+  var controls=td.querySelectorAll("input,textarea,select");if(controls.length)return Array.from(controls).map(function(x){return x.value||x.textContent||"";}).join(" ").trim();
+  return td.textContent.trim();
+}
+function extractTables(doc){
+  var out=[];
+  Array.from(doc.querySelectorAll("table")).forEach(function(table){
+    var rows=Array.from(table.querySelectorAll("tr"));if(rows.length<2)return;
+    var headers=Array.from(rows[0].querySelectorAll("th,td")).map(cellText);
+    var signature=headers.map(canon).join(" ");
+    if(!/лент|belt|линия|line|длин|length|ширин|width/.test(signature))return;
+    rows.slice(1).forEach(function(tr){var cells=Array.from(tr.querySelectorAll("td,th"));if(!cells.length)return;var o={};headers.forEach(function(h,i){o[h||("col"+i)]=cells[i]?cellText(cells[i]):"";});out.push(o);});
+  });return out;
+}
+function canon(s){return String(s||"").toLowerCase().replace(/ё/g,"е").replace(/[^a-zа-я0-9]+/g,"");}
+function flatten(o,prefix,out,depth){
+  out=out||{};depth=depth||0;if(!o||typeof o!=="object"||depth>2)return out;
+  Object.keys(o).forEach(function(k){var v=o[k],key=prefix?prefix+"."+k:k;if(v&&typeof v==="object"&&!Array.isArray(v))flatten(v,key,out,depth+1);else out[key]=v;});return out;
+}
+var ALIASES={
+  line:["линия","номерлинии","line","equipment","оборудование"],
+  name:["наименование","название","name","title","лента","belt"],
+  conveyorType:["типконвейера","conveyortype","типтранспортера"],
+  lengthMm:["длина","длиналенты","lленты","length","lengthmm"],
+  widthMm:["ширина","width","widthmm"],
+  thickness:["толщина","thickness","thicknessmm"],
+  drumDiameterMm:["диаметрбарабана","диаметрбарабанов","drumdiameter","drumdiametermm"],
+  quantity:["количество","требуемоеколичество","quantity","qty"],
+  stock:["остаток","наличие","stock","balance"],
+  minStock:["минимальныйзапас","минзапас","minstock"],
+  joint:["соединение","склейка","методсклейки","joint"],
+  material:["материал","material"],
+  purpose:["назначение","purpose","application"],
+  notes:["примечание","заметка","notes","comment"],
+  temp:["температура","temperature"],
+  fluids:["сож","масла","среды","fluids"]
+};
+function pick(flat,key){
+  var keys=Object.keys(flat),aliases=ALIASES[key]||[];
+  for(var i=0;i<keys.length;i++){var ck=canon(keys[i]);for(var j=0;j<aliases.length;j++){var a=canon(aliases[j]);if(ck===a||ck.indexOf(a)>=0)return flat[keys[i]];}}
+  return "";
+}
+function normalizeLegacyRecord(raw){
+  var f=flatten(raw),line=pick(f,"line"),name=pick(f,"name"),length=pick(f,"lengthMm"),width=pick(f,"widthMm"),th=pick(f,"thickness");
+  if(!line&&!name&&!length&&!width)return null;
+  var tr=nums(th),temp=nums(pick(f,"temp")),images=[];
+  Object.keys(f).forEach(function(k){var v=f[k];if(typeof v==="string"&&/^data:image\//i.test(v))images.push(v.replace(/\s/g,""));});
+  var b=normalizeBelt({
+    line:String(line||""),name:String(name||"Транспортерная лента"),conveyorType:String(pick(f,"conveyorType")||""),
+    lengthMm:num(length),widthMm:num(width),thicknessMin:tr.length?tr[0]:null,thicknessMax:tr.length>1?tr[1]:(tr.length?tr[0]:null),
+    drumDiameterMm:num(pick(f,"drumDiameterMm")),quantity:num(pick(f,"quantity"))||1,stock:num(pick(f,"stock"))||0,minStock:num(pick(f,"minStock"))||0,
+    joint:String(pick(f,"joint")||""),material:String(pick(f,"material")||""),purpose:String(pick(f,"purpose")||""),notes:String(pick(f,"notes")||""),
+    fluids:String(pick(f,"fluids")||""),tempMin:temp.length?temp[0]:null,tempMax:temp.length>1?temp[1]:null,source:"Импорт из старого HTML"
+  });
+  b._rawImages=images;return b;
+}
+
+load();render();
+})();
+</script>
+</body>
+</html>
