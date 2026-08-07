@@ -406,11 +406,28 @@ function bindConstructor(){
   function xy(e){var p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;var q=p.matrixTransform(svg.getScreenCTM().inverse());return {x:Math.round(q.x),y:Math.round(q.y)};}
   svg.onpointerdown=function(e){
     var circle=e.target.closest&&e.target.closest("[data-roller]");
-    if(circle){ui.selectedRoller=Number(circle.dataset.roller);ui.drag={index:ui.selectedRoller,start:xy(e),moved:false};svg.setPointerCapture(e.pointerId);render();return;}
+    if(circle){
+      ui.selectedRoller=Number(circle.dataset.roller);
+      ui.drag={index:ui.selectedRoller,pointerId:e.pointerId,moved:false};
+      svg.setPointerCapture(e.pointerId);
+      Array.from(svg.querySelectorAll(".roller")).forEach(function(x){x.classList.toggle("selected",Number(x.dataset.roller)===ui.selectedRoller);});
+      return;
+    }
     var p=xy(e);d.rollers.push({x:p.x,y:p.y,d:100});ui.selectedRoller=d.rollers.length-1;save();render();
   };
-  svg.onpointermove=function(e){if(!ui.drag)return;var p=xy(e),r=d.rollers[ui.drag.index];if(!r)return;r.x=p.x;r.y=p.y;ui.drag.moved=true;save();render();};
-  svg.onpointerup=function(){ui.drag=null;};
+  svg.onpointermove=function(e){
+    if(!ui.drag)return;
+    var p=xy(e),r=d.rollers[ui.drag.index];if(!r)return;
+    r.x=Math.max(0,Math.min(900,p.x));r.y=Math.max(0,Math.min(600,p.y));ui.drag.moved=true;
+    var circle=svg.querySelector('[data-roller="'+ui.drag.index+'"]');
+    if(circle){circle.setAttribute("cx",r.x);circle.setAttribute("cy",r.y);var label=circle.nextElementSibling;if(label){label.setAttribute("x",r.x);label.setAttribute("y",r.y+4);}}
+    var line=svg.querySelector(".belt-path");if(line)line.setAttribute("points",d.rollers.map(function(x){return x.x+","+x.y;}).join(" "));
+  };
+  svg.onpointerup=function(e){
+    if(!ui.drag)return;
+    try{svg.releasePointerCapture(e.pointerId);}catch(ignore){}
+    ui.drag=null;save();render();
+  };
   Array.from(document.querySelectorAll(".template")).forEach(function(b){b.onclick=function(){applyTemplate(b.dataset.template);};});
   document.getElementById("clearDesignBtn").onclick=function(){if(confirm("Очистить эскиз?")){d.rollers=[];ui.selectedRoller=null;save();render();}};
   document.getElementById("designToBeltBtn").onclick=function(){
@@ -474,6 +491,15 @@ function migrateHtml(html,fileName){
   var doc=new DOMParser().parseFromString(html,"text/html");
   Array.from(doc.querySelectorAll('script[type="application/json"]')).forEach(function(s){var v=safeParse(s.textContent);if(v)jsonCandidates.push(v);});
   extractAssignedJson(html).forEach(function(v){jsonCandidates.push(v);});
+  var direct=jsonCandidates.find(function(v){return v&&typeof v==="object"&&Array.isArray(v.belts);});
+  if(direct){
+    var exact=normalizeState(direct);
+    exact.meta.datasetId=id("dataset");
+    exact.meta.title="Импорт из "+fileName;
+    exact.meta.updatedAt=now();
+    exact.migration={summary:"из "+fileName+" — "+exact.belts.length+" карточек, "+exact.attachments.length+" изображений",log:["Распознана полная резервная структура приложения.","Все карточки, заказы, материалы, эскизы и связи с изображениями сохранены."]};
+    return exact;
+  }
   jsonCandidates.forEach(function(v){collectRecordArrays(v,records);});
   log.push("JSON-кандидатов: "+jsonCandidates.length);
   var tableRecords=extractTables(doc);
