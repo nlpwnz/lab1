@@ -1,7 +1,7 @@
 {
   "name": "kontur-learning",
   "productName": "Kontur Learning",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Автономная инженерная школа: ТАУ с нуля",
   "author": "Kontur Learning contributors",
   "private": true,
@@ -12,11 +12,15 @@
     "test:ui": "node test/ui.cjs",
     "test:electron": "node test/electron.cjs",
     "build:win": "electron-builder --win portable --x64 --publish never",
-    "build:installer": "electron-builder --win nsis --x64 --publish never"
+    "build:installer": "electron-builder --win nsis --x64 --publish never",
+    "build:formulas": "node scripts/build-formulas.cjs",
+    "test:formulas": "node scripts/build-formulas.cjs --check && node test/formula-layout.cjs",
+    "prebuild:win": "npm run build:formulas"
   },
   "devDependencies": {
     "electron": "45.0.0",
     "electron-builder": "26.18.0",
+    "katex": "0.16.22",
     "playwright-core": "1.58.2"
   },
   "build": {

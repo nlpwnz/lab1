@@ -1,5 +1,8 @@
 # Курс ТАУ с нуля — версия 3
 
+**Актуальная desktop-версия: [Контур 0.2.1 — EXE для Windows](https://raw.githubusercontent.com/nlpwnz/lab1/tau-desktop-v0.1/downloads/Kontur-Learning-0.2.1-Windows-x64.exe).** Исправлено отображение формул в новых опытах; добавлен пошаговый расчёт. После `git pull` запускайте EXE с номером **0.2.1**.
+
+
 [Скачать архив курса](https://github.com/nlpwnz/lab1/raw/refs/heads/tau-course-v3-download/downloads/tau-course-v3.zip)
 
 Если браузер показывает страницу файла, нажмите **Download raw file**.

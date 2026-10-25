@@ -37,7 +37,8 @@ const root=path.resolve(__dirname,'..');
     await page.locator('nav [data-view="notes"]').click();await page.getByText('Восстановленная заметка',{exact:true}).waitFor();
     await page.locator('nav [data-view="experiments"]').click();await page.locator('[data-experiment="derivative"]').click();
     await page.frameLocator('#course-frame').locator('#visual-frame svg').waitFor();
-    await page.locator('nav [data-view="experiments"]').click();await page.locator('[data-experiment="units"]').click();await page.frameLocator('#course-frame').locator('.basics[data-kind="units"] math').waitFor();
+    await page.locator('nav [data-view="experiments"]').click();await page.locator('[data-experiment="units"]').click();await page.frameLocator('#course-frame').locator('.basics[data-kind="units"] .katex-html').waitFor();
+    const formulaBox=await page.frameLocator('#course-frame').locator('.b-formula .katex-html').boundingBox();assert.ok(formulaBox.height>10&&formulaBox.height<100);
     console.log('PASS: real Electron startup, isolated renderer, real IPC saves, backup export/import, recovery before import, restart, embedded animation.');
   }finally{if(app)await app.close();await fs.rm(profile,{recursive:true,force:true});}
 })().catch(e=>{console.error(e);process.exitCode=1;});
