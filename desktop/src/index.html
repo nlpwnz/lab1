@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self' data:; frame-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'">
+<title>Контур — инженерная школа</title><link rel="stylesheet" href="app.css"></head>
+<body>
+<aside class="sidebar">
+  <a class="brand" href="#home" aria-label="Контур — на главную"><span class="brand-mark">К</span><span>контур<small>ИНЖЕНЕРНАЯ ШКОЛА</small></span></a>
+  <div class="nav-caption">МОЁ ОБУЧЕНИЕ</div>
+  <nav aria-label="Основная навигация">
+    <button data-view="home"><span class="nav-icon">⌂</span> Главная</button>
+    <button data-view="course"><span class="nav-icon">▤</span> Курс ТАУ <span class="nav-count">26</span></button>
+    <button data-view="experiments"><span class="nav-icon">◉</span> Опыты и анимации</button>
+    <button data-view="notes"><span class="nav-icon">▧</span> Мои заметки</button>
+    <button data-view="bookmarks"><span class="nav-icon">☆</span> Закладки</button>
+  </nav>
+  <div class="sidebar-course"><div class="tiny-label">ПЕРВЫЙ РАЗДЕЛ</div><strong>Теория автоматического управления</strong><p>От первого графика<br>до настройки контура.</p><div class="mini-track"><span id="side-progress"></span></div><small id="side-count">0 из 26 глав прочитано</small></div>
+  <div class="sidebar-bottom"><button data-view="settings">⚙ &nbsp; Данные и материалы</button><p><i></i> Работает без интернета</p><small>Версия 0.1 · Windows</small></div>
+</aside>
+<main><header class="topbar"><div><span class="breadcrumb">Инженерная школа</span><span class="crumb-separator">/</span><span id="crumb">Главная</span></div><span class="save-state" id="save-state" role="status">Загрузка…</span></header>
+<div id="warning" role="alert" hidden></div>
+<div id="content"></div>
+<section id="reader" hidden><div class="reader-bar"><button class="text-button" id="back-course">← К главам</button><div id="reader-title"></div><button class="text-button" id="bookmark">☆ Закладка</button><button class="text-button" id="slides">Слайды</button><button class="text-button" id="toggle-notes">Заметка</button></div><div class="reader-grid"><iframe title="Учебный материал ТАУ" id="course-frame" src="../content/tau/index.html"></iframe><aside class="reader-notes" id="reader-notes" hidden><label for="lesson-note">Моя заметка к главе</label><p>Запишите вывод, вопрос или собственный пример.</p><textarea id="lesson-note" maxlength="20000" placeholder="Что я понял? Где осталось непонятно?"></textarea><small>Сохраняется автоматически на этом компьютере.</small></aside></div></section>
+</main><div id="toast" role="status" hidden></div>
+<script src="catalog.js"></script><script src="app.js"></script></body></html>

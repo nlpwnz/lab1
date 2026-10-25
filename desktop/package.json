@@ -1,0 +1,38 @@
+{
+  "name": "kontur-learning",
+  "productName": "Kontur Learning",
+  "version": "0.1.0",
+  "description": "Автономная инженерная школа: ТАУ с нуля",
+  "author": "Kontur Learning contributors",
+  "private": true,
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test test/*.test.cjs",
+    "test:ui": "node test/ui.cjs",
+    "test:electron": "node test/electron.cjs",
+    "build:win": "electron-builder --win portable --x64 --publish never",
+    "build:installer": "electron-builder --win nsis --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "45.0.0",
+    "electron-builder": "26.18.0",
+    "playwright-core": "1.58.2"
+  },
+  "build": {
+    "appId": "org.kontur.learning",
+    "asar": true,
+    "directories": {"output": "dist"},
+    "files": ["main.cjs", "preload.cjs", "state.cjs", "src/**/*", "content/**/*"],
+    "win": {"target": ["portable"], "signAndEditExecutable": false},
+    "portable": {"artifactName": "Kontur-Learning-${version}-Windows-x64.exe"},
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
+      "createDesktopShortcut": true,
+      "artifactName": "Kontur-Learning-${version}-Windows-x64-Setup.${ext}"
+    }
+  }
+}

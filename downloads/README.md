@@ -20,3 +20,9 @@ SHA-256: `8812aac7dc25eae616e0529e4a226a9b6100a383e77e9207f3c78b47a1d3d31c`
 [Скачать обзор PDF](https://raw.githubusercontent.com/nlpwnz/lab1/tau-course-v3-download/downloads/tau-research-2026-10-25.pdf) · [Скачать комплект ZIP](https://raw.githubusercontent.com/nlpwnz/lab1/tau-course-v3-download/downloads/tau-research-2026-10-25.zip)
 
 12 отобранных источников, методы обучения с основаниями, план улучшений, готовый урок, 12 диагностических вопросов и три инженерных кейса. ZIP содержит автономную HTML-версию с раскрывающимися ответами, PDF и список источников. Это исследовательское дополнение; предложенные функции ещё не встроены в основной курс v3.
+
+## Desktop-приложение «Контур» — пробная версия 0.1
+
+[Скачать для Windows 10/11 x64](https://github.com/nlpwnz/lab1/releases/download/kontur-v0.1.0/Kontur-Learning-0.1.0-Windows-x64.exe) · [Страница выпуска и инструкция](https://github.com/nlpwnz/lab1/releases/tag/kontur-v0.1.0)
+
+Переносимый EXE, установка не нужна. ТАУ — первый раздел: 26 глав, 8 интерактивных модулей, заметки, закладки и резервная копия прогресса. [Исходники и описание](../desktop/README.md). Приложение проверено в Electron в Linux; запуск Windows-файла на реальном ПК пока не проверен. EXE без подписи издателя.
