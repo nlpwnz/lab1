@@ -40,13 +40,33 @@ const root=path.resolve(__dirname,'..');
     await page.locator('nav [data-view="bookmarks"]').click();assert.equal(await page.locator('.lesson-row').count(),1);
     await page.locator('.lesson-row').click();await page.locator('#toggle-notes').click();assert.match(await page.locator('#lesson-note').inputValue(),/2 °C\/с/);
     await page.locator('nav [data-view="notes"]').click();assert.equal(await page.locator('.note-card script').count(),0);assert.match(await page.locator('.note-card').innerText(),/<script>/);
-    for(const id of ['process','derivative','integral','poles','tank','first','pid','freq']){
+    for(const id of ['units','graph','process','derivative','integral','poles','tank','first','pid','freq']){
       await page.locator('nav [data-view="experiments"]').click();await page.locator(`[data-experiment="${id}"]`).click();
-      if(['process','derivative','integral','poles'].includes(id))await frame.locator('#visual-frame svg').waitFor();else await frame.locator('#chart').waitFor();
+      if(['units','graph'].includes(id))await frame.locator('.basics[data-kind="'+id+'"] svg').waitFor();else if(['process','derivative','integral','poles'].includes(id))await frame.locator('#visual-frame svg').waitFor();else await frame.locator('#chart').waitFor();
       assert.equal(await page.locator('#reader').isVisible(),true);
     }
+    await page.locator('nav [data-view="experiments"]').click();await page.locator('[data-experiment="units"]').click();
+    await frame.locator('#b-range').selectOption('temperature');
+    const setRange=async(id,value)=>page.evaluate(({id,value})=>{const el=document.querySelector('#course-frame').contentDocument.getElementById(id);el.value=value;el.dispatchEvent(new Event('input',{bubbles:true}));},{id,value});
+    await setRange('b-start',0);await setRange('b-end',50);
+    assert.match(await frame.locator('#b-values').innerText(),/Не определено/);assert.match(await frame.locator('#b-metrics').innerText(),/50 °C/);assert.match(await frame.locator('#b-metrics').innerText(),/12 мА/);
+    await frame.locator('#b-answer-0').fill('');await frame.locator('[data-action="check"]').first().click();assert.match(await frame.locator('.b-feedback').first().innerText(),/Введите число/);
+    await frame.locator('#b-answer-0').fill('5,0');await frame.locator('[data-action="check"]').first().click();assert.match(await frame.locator('.b-feedback').first().innerText(),/^Верно/);
+    await page.evaluate(()=>document.querySelector('#course-frame').contentWindow.scrollTo(0,0));
+    await page.screenshot({path:path.join(root,'test-results/scales.png'),fullPage:true});
+    await page.locator('nav [data-view="experiments"]').click();await page.locator('[data-experiment="graph"]').click();
+    await frame.locator('#b-trend').selectOption('hold');await setRange('b-a',6);await setRange('b-b',9);assert.match(await frame.locator('#b-metrics').innerText(),/0 °C\/с/);
+    await setRange('b-a',19);assert.equal(await frame.locator('#b-b').inputValue(),'20');await setRange('b-b',1);assert.equal(await frame.locator('#b-a').inputValue(),'0');
+    await frame.locator('[data-action="reset"]').click();await frame.locator('#b-trend').selectOption('cool');assert.match(await frame.locator('#b-metrics').innerText(),/−3 °C\/с|-3 °C\/с/);
+    await frame.locator('#b-answer-0').fill('3');await frame.locator('[data-action="check"]').first().click();assert.match(await frame.locator('.b-feedback').first().innerText(),/^Пока неверно/);
+    await frame.locator('#b-answer-0').fill('−3');await frame.locator('[data-action="check"]').first().click();assert.match(await frame.locator('.b-feedback').first().innerText(),/^Верно/);
+    await frame.locator('[data-action="play"]').click();await page.waitForFunction(()=>document.querySelector('#course-frame').contentDocument.querySelector('#b-values').textContent.includes('t = 0,') );
+    await frame.locator('[data-action="play"]').click();assert.equal(await frame.locator('[data-action="play"]').innerText(),'Пуск');
+    await page.evaluate(()=>document.querySelector('#course-frame').contentWindow.scrollTo(0,0));
+    await page.screenshot({path:path.join(root,'test-results/graph.png'),fullPage:true});
+    await frame.locator('[data-action="back"]').click();await frame.getByRole('heading',{name:'Графики и наклон',exact:true}).waitFor();await frame.locator('.basics-link').click();await frame.locator('.basics[data-kind="graph"]').waitFor();
     await page.locator('nav [data-view="experiments"]').click();await page.screenshot({path:path.join(root,'test-results/experiments.png'),fullPage:true});
     await page.setViewportSize({width:1000,height:700});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'No horizontal overflow at minimum size');
-    assert.deepEqual(errors,[]);console.log('PASS: 26 chapters, math, search, notes, bookmarks, restart persistence, escaping, all 8 activities, minimum window width.');
+    assert.deepEqual(errors,[]);console.log('PASS: 26 chapters, math, search, notes, bookmarks, restart persistence, escaping, all 10 activities; scales, signed slopes, invalid intervals, numeric answers and playback, minimum window width.');
   }finally{await browser.close();server.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,7 +1,7 @@
 {
   "name": "kontur-learning",
   "productName": "Kontur Learning",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Автономная инженерная школа: ТАУ с нуля",
   "author": "Kontur Learning contributors",
   "private": true,
