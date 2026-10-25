@@ -22,10 +22,25 @@
   "build": {
     "appId": "org.kontur.learning",
     "asar": true,
-    "directories": {"output": "dist"},
-    "files": ["main.cjs", "preload.cjs", "state.cjs", "src/**/*", "content/**/*"],
-    "win": {"target": ["portable"], "signAndEditExecutable": false},
-    "portable": {"artifactName": "Kontur-Learning-${version}-Windows-x64.exe"},
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "state.cjs",
+      "src/**/*",
+      "content/**/*"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "Kontur-Learning-${version}-Windows-x64.exe"
+    },
     "nsis": {
       "oneClick": false,
       "perMachine": false,
@@ -33,6 +48,10 @@
       "deleteAppDataOnUninstall": false,
       "createDesktopShortcut": true,
       "artifactName": "Kontur-Learning-${version}-Windows-x64-Setup.${ext}"
-    }
+    },
+    "electronLanguages": [
+      "ru",
+      "en-US"
+    ]
   }
 }

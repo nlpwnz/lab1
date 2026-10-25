@@ -1,0 +1,3 @@
+1bc206fbf7be1b24703472408cf928680b3026273573957cd607dce15a1270ac  Kontur-Learning-0.1.0-Windows-x64.exe
+5381a477233ce9fdfd45de130cbd6b5ee9786badcc20cfa45eb687ec25ff25e9  Kontur-Learning-0.1.0-source.zip
+2eef8eef436cc5d606a079ace92bfaed70025735398539b1030ba20ca46668d0  Kontur-START-HERE-RU.txt

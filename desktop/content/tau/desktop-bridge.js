@@ -5,6 +5,8 @@
   lesson=function(i){originalLesson(i);send('lesson',{id:current});};
   check=function(i){originalCheck(i);if(i===chapters[current].correct)send('passed',{id:current});};
   complete=function(){originalComplete();send('completed',{id:current});};
+  const originalMoveSlide=moveSlide;
+  moveSlide=function(d){originalMoveSlide(d);send('lesson',{id:current});};
   home=function(){send('catalog');};
   const originalVisual=showVisual, originalLabs=showLabs;
   showVisual=function(id){originalVisual(id);send('activity',{id});};

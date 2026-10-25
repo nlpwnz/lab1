@@ -23,6 +23,6 @@ SHA-256: `8812aac7dc25eae616e0529e4a226a9b6100a383e77e9207f3c78b47a1d3d31c`
 
 ## Desktop-приложение «Контур» — пробная версия 0.1
 
-[Скачать для Windows 10/11 x64](https://github.com/nlpwnz/lab1/releases/download/kontur-v0.1.0/Kontur-Learning-0.1.0-Windows-x64.exe) · [Страница выпуска и инструкция](https://github.com/nlpwnz/lab1/releases/tag/kontur-v0.1.0)
+[Скачать для Windows 10/11 x64](https://raw.githubusercontent.com/nlpwnz/lab1/tau-desktop-v0.1/downloads/Kontur-Learning-0.1.0-Windows-x64.exe) · [Инструкция](../desktop/README.md)
 
 Переносимый EXE, установка не нужна. ТАУ — первый раздел: 26 глав, 8 интерактивных модулей, заметки, закладки и резервная копия прогресса. [Исходники и описание](../desktop/README.md). Приложение проверено в Electron в Linux; запуск Windows-файла на реальном ПК пока не проверен. EXE без подписи издателя.
